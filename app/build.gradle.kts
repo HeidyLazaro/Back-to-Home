@@ -47,6 +47,18 @@ dependencies {
     // Maps SDK for Android
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
+    // Maps SDK for Android
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.5")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.5")
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -56,6 +68,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
