@@ -54,7 +54,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
-    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation ("com.google.accompanist:accompanist-permissions:0.24.13-rc")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.5")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.5")
 
