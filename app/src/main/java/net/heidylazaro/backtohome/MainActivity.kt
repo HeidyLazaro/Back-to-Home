@@ -2,6 +2,7 @@ package net.heidylazaro.backtohome
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
+import java.util.Locale
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient
@@ -120,37 +125,76 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     @Composable
     fun SearchLocation(onLocationSelected: (LatLng) -> Unit) {
         var text by remember { mutableStateOf("") }
+        var suggestions by remember { mutableStateOf<List<String>>(emptyList()) }
+        var selectedAddress by remember { mutableStateOf<String?>(null) }
         val context = LocalContext.current
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+                .padding(16.dp)
         ) {
             TextField(
                 value = text,
-                onValueChange = { text = it },
-                label = { Text("Ingresa latitud,longitud") },
+                onValueChange = { newText ->
+                    text = newText
+
+                    if (newText.length >= 3) {
+                        val geocoder = Geocoder(context, Locale.getDefault())
+                        val results = try {
+                            geocoder.getFromLocationName(newText, 5)
+                        } catch (e: Exception) {
+                            emptyList()
+                        }
+
+                        suggestions = results?.mapNotNull { it.getAddressLine(0) } ?: emptyList()
+                    } else {
+                        suggestions = emptyList()
+                    }
+                },
+                label = { Text("Buscar dirección...") },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn {
+                items(suggestions) { suggestion ->
+                    Text(
+                        text = suggestion,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedAddress = suggestion
+                                text = suggestion // mostrar la selección en el TextField
+                                suggestions = emptyList() // ocultar sugerencias
+                            }
+                            .padding(8.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
-                    try {
-                        val parts = text.split(",")
-                        val lat = parts[0].toDouble()
-                        val lng = parts[1].toDouble()
-                        onLocationSelected(LatLng(lat, lng))
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "Formato inválido. Usa latitud,longitud", Toast.LENGTH_SHORT).show()
+                    selectedAddress?.let { address ->
+                        val geocoder = Geocoder(context, Locale.getDefault())
+                        val result = try {
+                            geocoder.getFromLocationName(address, 1)?.firstOrNull()
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        result?.let {
+                            onLocationSelected(LatLng(it.latitude, it.longitude))
+                        }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = selectedAddress != null
             ) {
-                Text("Mover cámara")
+                Text("Ir")
             }
         }
     }
