@@ -132,6 +132,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .width(200.dp)
                         .padding(vertical = 8.dp)
+                        .padding(top = 16.dp)
                 ) {
                     Text("Centrar en mi ubicación")
                 }
